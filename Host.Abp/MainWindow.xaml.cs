@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp;
 
 namespace MyApp
 {
@@ -31,8 +32,11 @@ namespace MyApp
 
         private void Btn_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            var child = new MainWindow();
-            child.ShowDialog(this);
+            var model = this.DataContext as MainWindowViewModel;
+            model.ShowCommand.Execute(null);
+            //throw new UserFriendlyException("Code behind");
+            //var child = new MainWindow();
+            //child.ShowDialog(this);
         }
     }
 }

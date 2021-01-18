@@ -67,9 +67,9 @@ namespace MyApp
             RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
             {
                 Log.Fatal(ex, "onNext!");
-                if (!(ex is UserFriendlyException) && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                if (!(ex is UserFriendlyException))
                 {
-                    desktop.Shutdown();
+                    MessageBus.Current.SendMessage(new ShutdownApp(),"1");
                 }
             });
         }
@@ -84,8 +84,14 @@ namespace MyApp
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = _host.Services.GetRequiredService<MainWindow>();
+                MessageBus.Current.Listen<ShutdownApp>("1")
+                    .Subscribe(x =>
+                    {
+                        desktop.Shutdown();
+                    });
             }
             base.OnFrameworkInitializationCompleted();
         }
     }
+    public class ShutdownApp{}
 }

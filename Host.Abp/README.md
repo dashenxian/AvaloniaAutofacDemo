@@ -1,2 +1,2 @@
 # AvaloniaAutofacDemo
-Avalonia替换依赖注入框架为Autofac
+Avalonia替换依赖注入框架为微软通用DI

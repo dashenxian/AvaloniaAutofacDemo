@@ -47,6 +47,7 @@ namespace MyApp
                     // Configure our local services and access the host configuration
                     services.AddApplication<HostAbpModule>();
                 })
+                .UseSerilog()
                 .ConfigureLogging(loggingBuilder =>
                 {
                     loggingBuilder.AddSplat();
@@ -66,7 +67,7 @@ namespace MyApp
             AvaloniaXamlLoader.Load(this);
             RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
             {
-                Log.Fatal(ex, "onNext!");
+                Log.Error(ex, "onNext!");
                 if (!(ex is UserFriendlyException))
                 {
                     MessageBus.Current.SendMessage(new ShutdownApp(),"1");

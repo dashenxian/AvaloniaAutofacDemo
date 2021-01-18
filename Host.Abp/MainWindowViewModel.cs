@@ -6,25 +6,31 @@ using System.Windows.Input;
 using Avalonia.Controls;
 using ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Volo.Abp;
+using Serilog;
 
 namespace MyApp
 {
     public class MainWindowViewModel : ReactiveObject,Volo.Abp.DependencyInjection.ITransientDependency
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<MainWindow> _logger;
         public Window View { get; set; }
         public ICommand ShowCommand { get; }
         public ICommand ShowCommand2 { get; }
-        public MainWindowViewModel(IServiceProvider serviceProvider)
+        public MainWindowViewModel(IServiceProvider serviceProvider, ILogger<MainWindow> logger)
         {
             _serviceProvider = serviceProvider;
+            _logger = logger;
             ShowCommand = ReactiveCommand.CreateFromTask(ShowAsync);
             ShowCommand2 = ReactiveCommand.CreateFromTask(ShowAsync2);
         }
 
         public async Task ShowAsync()
         {
+            _logger.LogInformation("出错之前");
+            Log.Logger.Information("出错之前2");
             throw new UserFriendlyException("这是错误");
             //Error
             var child = _serviceProvider.GetService<MainWindow>();//new MainWindow();

@@ -35,8 +35,10 @@ namespace MyApp
             try
             {
                 //RxApp.DefaultExceptionHandler = new MyCoolObservableExceptionHandler();
+                Log.Information("启动程序");
                 BuildAvaloniaApp()
                    .StartWithClassicDesktopLifetime(args);
+                Log.Information("关闭程序");
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using Autofac;
@@ -10,6 +11,7 @@ using Avalonia.Threading;
 using Host.Abp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using Serilog;
 using Serilog.Events;
@@ -17,6 +19,7 @@ using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
 using Splat.Microsoft.Extensions.Logging;
 using Volo.Abp;
+using LogLevel = Splat.LogLevel;
 
 namespace MyApp
 {
@@ -43,7 +46,7 @@ namespace MyApp
                     RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
                     Locator.CurrentMutable.RegisterConstant(new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
                     Locator.CurrentMutable.RegisterConstant(new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-
+                    //services.AddTransient<Splat.ILogger, LoggingService>();
                     // Configure our local services and access the host configuration
                     services.AddApplication<HostAbpModule>();
                 })
@@ -59,6 +62,11 @@ namespace MyApp
             // we need to re-register the built container with Splat again
             var container = _host.Services;
             container.UseMicrosoftDependencyResolver();
+//            var log = container.GetService<ILogger<LoggingService>>();
+//#if DEBUG
+
+//            Locator.CurrentMutable.RegisterConstant(new LoggingService(log) { Level = LogLevel.Debug }, typeof(Splat.ILogger));
+//#endif
         }
 
         public override void Initialize()
@@ -70,7 +78,7 @@ namespace MyApp
                 Log.Error(ex, "onNext!");
                 if (!(ex is UserFriendlyException))
                 {
-                    MessageBus.Current.SendMessage(new ShutdownApp(),"1");
+                    MessageBus.Current.SendMessage(new ShutdownApp(), "1");
                 }
             });
         }
@@ -94,5 +102,40 @@ namespace MyApp
             base.OnFrameworkInitializationCompleted();
         }
     }
-    public class ShutdownApp{}
+    public class ShutdownApp { }
+    public class LoggingService : Splat.ILogger
+    {
+        private readonly ILogger<LoggingService> _logger;
+
+        public LoggingService(ILogger<LoggingService> logger)
+        {
+            _logger = logger;
+            Level = LogLevel.Debug;
+        }
+        public LogLevel Level { get; set; }
+
+        public void Write([Localizable(false)] string message, LogLevel logLevel)
+        {
+            if (logLevel >= Level)
+                _logger.LogInformation(message);
+        }
+
+        public void Write(Exception exception, [Localizable(false)] string message, LogLevel logLevel)
+        {
+            if (logLevel >= Level)
+                _logger.LogInformation(message);
+        }
+
+        public void Write([Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+        {
+            if (logLevel >= Level)
+                _logger.LogInformation(message);
+        }
+
+        public void Write(Exception exception, [Localizable(false)] string message, [Localizable(false)] Type type, LogLevel logLevel)
+        {
+            if (logLevel >= Level)
+                System.Diagnostics.Debug.WriteLine(message);
+        }
+    }
 }

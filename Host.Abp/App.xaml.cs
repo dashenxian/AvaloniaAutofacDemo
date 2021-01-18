@@ -37,6 +37,13 @@ namespace MyApp
         {
             _host = Microsoft.Extensions.Hosting.Host
                 .CreateDefaultBuilder()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    IHostEnvironment env = hostingContext.HostingEnvironment;
+
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                })
                 //.UseEnvironment(Environments.Development)
                 .ConfigureServices(services =>
                 {
@@ -55,13 +62,6 @@ namespace MyApp
                 .ConfigureLogging(loggingBuilder =>
                 {
                     loggingBuilder.AddSplat();
-                })
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    IHostEnvironment env = hostingContext.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
                 })
                 .Build();
             _application = _host.Services.GetService<IAbpApplicationWithExternalServiceProvider>();

@@ -16,6 +16,10 @@ namespace Host.Abp
             var services = context.Services;
             services.AddTransient<MainWindow>();
             services.AddTransient<Splat.ILogger, LoggingService>();
+
+            var configuration = services.GetConfiguration();
+            services.Configure<SerilogOption>(configuration.GetSection(
+                "Serilog"));
         }
     }
 }

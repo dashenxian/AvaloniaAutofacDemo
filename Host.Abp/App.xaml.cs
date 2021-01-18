@@ -1,4 +1,6 @@
 using System;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using Autofac;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -62,7 +64,14 @@ namespace MyApp
         {
             Initialize(_host.Services);
             AvaloniaXamlLoader.Load(this);
-
+            RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
+            {
+                Log.Fatal(ex, "onNext!");
+                if (!(ex is UserFriendlyException) && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    desktop.Shutdown();
+                }
+            });
         }
 
         private void Initialize(IServiceProvider serviceProvider)
@@ -75,7 +84,6 @@ namespace MyApp
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = _host.Services.GetRequiredService<MainWindow>();
-
             }
             base.OnFrameworkInitializationCompleted();
         }

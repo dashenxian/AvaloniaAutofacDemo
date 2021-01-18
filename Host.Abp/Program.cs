@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
+using ReactiveUI;
 using Serilog;
 using Serilog.Events;
 
@@ -29,6 +34,7 @@ namespace MyApp
 
             try
             {
+                //RxApp.DefaultExceptionHandler = new MyCoolObservableExceptionHandler();
                 BuildAvaloniaApp()
                    .StartWithClassicDesktopLifetime(args);
             }
@@ -42,11 +48,37 @@ namespace MyApp
             }
         }
 
+        private void ExceptionHandle(Exception ex)
+        {
+
+        }
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UseReactiveUI()
                 .UsePlatformDetect()
                 .LogToDebug();
+    }
+    public class MyCoolObservableExceptionHandler : IObserver<Exception>
+    {
+        public void OnNext(Exception value)
+        {
+            if (Debugger.IsAttached) Debugger.Break();
+
+            RxApp.MainThreadScheduler.Schedule(() => { throw value; });
+        }
+
+        public void OnError(Exception error)
+        {
+            if (Debugger.IsAttached) Debugger.Break();
+
+            RxApp.MainThreadScheduler.Schedule(() => { throw error; });
+        }
+
+        public void OnCompleted()
+        {
+            if (Debugger.IsAttached) Debugger.Break();
+            RxApp.MainThreadScheduler.Schedule(() => { throw new NotImplementedException(); });
+        }
     }
 }

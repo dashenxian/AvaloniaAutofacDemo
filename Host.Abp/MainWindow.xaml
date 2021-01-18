@@ -8,6 +8,7 @@
     <StackPanel Orientation="Vertical">
 		<Button Name="ShowChild" Content="显示子窗体"/>
 		<!--//Error-->
-		<Button Command="{Binding ShowCommand}" Content="显示子窗体2"/>
+		<Button Command="{Binding ShowCommand}" Content="显示子窗体1"/>
+		<Button Command="{Binding ShowCommand2}" Content="显示子窗体2"/>
 	</StackPanel>
 </Window>

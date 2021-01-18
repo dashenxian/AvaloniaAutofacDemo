@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using Host.Abp;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -36,6 +37,7 @@ namespace MyApp
         {
             _host = Microsoft.Extensions.Hosting.Host
                 .CreateDefaultBuilder()
+                //.UseEnvironment(Environments.Development)
                 .ConfigureServices(services =>
                 {
                     services.UseMicrosoftDependencyResolver();
@@ -54,7 +56,13 @@ namespace MyApp
                 {
                     loggingBuilder.AddSplat();
                 })
-                .UseEnvironment(Environments.Development)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    IHostEnvironment env = hostingContext.HostingEnvironment;
+
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                })
                 .Build();
             _application = _host.Services.GetService<IAbpApplicationWithExternalServiceProvider>();
             // Since MS DI container is a different type,

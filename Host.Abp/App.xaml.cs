@@ -46,7 +46,6 @@ namespace MyApp
                     RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
                     Locator.CurrentMutable.RegisterConstant(new AvaloniaActivationForViewFetcher(), typeof(IActivationForViewFetcher));
                     Locator.CurrentMutable.RegisterConstant(new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-                    //services.AddTransient<Splat.ILogger, LoggingService>();
                     // Configure our local services and access the host configuration
                     services.AddApplication<HostAbpModule>();
                 })
@@ -62,11 +61,6 @@ namespace MyApp
             // we need to re-register the built container with Splat again
             var container = _host.Services;
             container.UseMicrosoftDependencyResolver();
-//            var log = container.GetService<ILogger<LoggingService>>();
-//#if DEBUG
-
-//            Locator.CurrentMutable.RegisterConstant(new LoggingService(log) { Level = LogLevel.Debug }, typeof(Splat.ILogger));
-//#endif
         }
 
         public override void Initialize()

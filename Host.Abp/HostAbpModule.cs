@@ -13,7 +13,9 @@ namespace Host.Abp
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
-            context.Services.AddTransient<MainWindow>();
+            var services = context.Services;
+            services.AddTransient<MainWindow>();
+            services.AddTransient<Splat.ILogger, LoggingService>();
         }
     }
 }

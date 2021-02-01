@@ -41,7 +41,7 @@ namespace MyApp
             _logger.LogInformation(_serilogOption.MinimumLevel.Default);
             _logger.LogInformation("出错之前");
             Log.Logger.Information("出错之前2");
-            //throw new UserFriendlyException("这是错误");
+            throw new UserFriendlyException("这是错误");
             //Error
             var child = _serviceProvider.GetService<MainWindow>();//new MainWindow();
             await child.ShowDialog(View);

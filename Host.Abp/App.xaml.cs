@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using Autofac;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -73,6 +74,7 @@ namespace MyApp
 
         public override void Initialize()
         {
+            Interaction<string, bool> interaction = new Interaction<string, bool>();
             Initialize(_host.Services);
             AvaloniaXamlLoader.Load(this);
             RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
@@ -81,6 +83,21 @@ namespace MyApp
                 if (!(ex is UserFriendlyException))
                 {
                     MessageBus.Current.SendMessage(new ShutdownApp(), "1");
+                }
+                else
+                {
+
+                    //interaction.RegisterHandler( interaction =>
+                    //{
+                    //    var deleteIt = this.DisplayAlert(
+                    //        "Confirm Delete",
+                    //        $"Are you sure you want to delete '{interaction.Input}'?",
+                    //        "YES",
+                    //        "NO");
+
+                    //    interaction.SetOutput(deleteIt);
+                    //});
+                    //interaction.Handle(ex.Message);
                 }
             });
         }

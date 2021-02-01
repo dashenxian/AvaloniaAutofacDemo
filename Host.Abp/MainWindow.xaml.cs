@@ -35,7 +35,7 @@ namespace MyApp
         {
             var model = this.DataContext as MainWindowViewModel;
             model.ShowCommand.Execute(null);
-            //throw new UserFriendlyException("Code behind");
+            throw new UserFriendlyException("Code behind");
             //var child = new MainWindow();
             //child.ShowDialog(this);
         }
